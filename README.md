@@ -14,7 +14,7 @@ https://blog.openshift.com/deploy-helm-charts-minishifts-openshift-local-develop
 
 We use the master branch to store our charts code, and gh-pages branch as the charts repository.
 
-GitHub Pages points to the `docs` folder and our repository is accessible on https://michaeltrip.github.io/helm-charts
+GitHub Pages points to the `root` folder and our repository is accessible on https://michaeltrip.github.io/helm-charts
 
 ### Add this repo to helm
 
