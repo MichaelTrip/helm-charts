@@ -24,26 +24,16 @@ helm repo add michaeltrip https://michaeltrip.github.io/helm-charts
 
 ### Add a chart
 
-```bash
-CHART=s3-exporter
-helm create $CHART
-helm package $CHART -d docs
-helm repo index docs --url https://michaeltrip.github.io/helm-charts
-git add .
-git commit -m "add chart $CHART"
-git push origin master
-```
+Create a chart and put it in the `charts` directory. Github actions will do rest.
 
-### Update a chart
 
-```bash
-export CHART=gitlab-backup
-helm package $CHART -d docs
-helm repo index docs --url https://michaeltrip.github.io/helm-charts
-git add .
-git commit -m "updated $CHART"
-git push origin master
-```
+### Github Action workflow
+
+A workflow in the `.github/workflows/release.yaml` is created to auto release new charts. https://github.com/helm/chart-releaser-action
+
+### Github pages
+
+Make sure you create a `gh-pages` branch for the Github action workflow to work correctly.
 
 ### Hello-world chart
 
