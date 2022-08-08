@@ -1,6 +1,6 @@
 # MichaelTrip Helm Charts Repo
 
-This is the camptocamp charts repository.
+This is the MichaelTrip charts repository.
 
 ### Helm Documentation
 
