@@ -14,6 +14,16 @@ entries:
   nginx-hello-world:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2022-08-15T13:33:35.502243013Z"
+    description: A Helm chart for Kubernetes
+    digest: 210b1c8b563514caa7adc56a6ec82f60e14023abe8388dbfe725fc3a1b45e8ed
+    name: nginx-hello-world
+    type: application
+    urls:
+    - https://github.com/MichaelTrip/helm-charts/releases/download/nginx-hello-world-0.0.3/nginx-hello-world-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2022-08-08T09:48:24.360277651Z"
     description: A Helm chart for Kubernetes
     digest: f5fc757a8215c4374453c1eb016de0fc812355612526837ae5eef84eb61a703e
@@ -32,4 +42,4 @@ entries:
     urls:
     - https://github.com/MichaelTrip/helm-charts/releases/download/nginx-hello-world-0.0.1/nginx-hello-world-0.0.1.tgz
     version: 0.0.1
-generated: "2022-08-08T13:53:16.116252224Z"
+generated: "2022-08-15T13:33:35.502272317Z"
