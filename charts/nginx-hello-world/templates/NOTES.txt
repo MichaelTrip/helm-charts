@@ -1,3 +1,26 @@
+
+              | |/ /   _| |__   ___ _ __ _ __   ___| |_ ___  ___
+              | ' / | | | '_ \ / _ \ '__| '_ \ / _ \ __/ _ \/ __|
+              | . \ |_| | |_) |  __/ |  | | | |  __/ ||  __/\__ \
+              |_|\_\__,_|_.__/ \___|_|  |_| |_|\___|\__\___||___/
+
+               _____                    _       _   _
+              |_   _|__ _ __ ___  _ __ | | __ _| |_(_)_ __   __ _
+                | |/ _ \ '_ ` _ \| '_ \| |/ _` | __| | '_ \ / _` |
+                | |  __/ | | | | | |_) | | (_| | |_| | | | | (_| |
+                |_|\___|_| |_| |_| .__/|_|\__,_|\__|_|_| |_|\__, |
+                                 |_|                        |___/
+                __        __         _        _
+                \ \      / /__  _ __| | _____| |__   ___  _ __
+                 \ \ /\ / / _ \| '__| |/ / __| '_ \ / _ \| '_ \
+                  \ V  V / (_) | |  |   <\__ \ | | | (_) | |_) |
+                   \_/\_/ \___/|_|  |_|\_\___/_| |_|\___/| .__/
+                                                         |_|
+
+
+You have deployed your, i think, First helm Chart! Well done!
+
+
 1. Get the application URL by running these commands:
 {{- if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "nginx-hello-world.fullname" . }})
