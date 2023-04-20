@@ -42,4 +42,15 @@ entries:
     urls:
     - https://github.com/MichaelTrip/helm-charts/releases/download/nginx-hello-world-0.0.1/nginx-hello-world-0.0.1.tgz
     version: 0.0.1
-generated: "2022-08-15T13:33:35.502272317Z"
+  rancher-demo:
+  - apiVersion: v1
+    appVersion: 0.5.0
+    created: "2023-04-20T10:09:42.593103847Z"
+    description: Rancher demo application, web UI showing scale of containers
+    digest: 3ee35515f82430e7aee47e00e865b079de717c256375f36ba6b1e25dea9bf583
+    icon: https://udemy-images.udemy.com/course/750x422/1527740_a494.jpg
+    name: rancher-demo
+    urls:
+    - https://github.com/MichaelTrip/helm-charts/releases/download/rancher-demo-0.5.0/rancher-demo-0.5.0.tgz
+    version: 0.5.0
+generated: "2023-04-20T10:09:42.593120347Z"
