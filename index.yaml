@@ -1,3 +1,14 @@
 apiVersion: v1
-entries: {}
-generated: "2024-02-26T15:30:05.172187548+01:00"
+entries:
+  rancher-demo:
+  - apiVersion: v1
+    appVersion: 0.5.3
+    created: "2024-02-26T14:44:14.124866208Z"
+    description: Rancher demo application, web UI showing scale of containers
+    digest: 5384340b1c1b6a7cb0cb9c492dfab34a3ae8447402de4533a121064a7b349dcb
+    icon: https://udemy-images.udemy.com/course/750x422/1527740_a494.jpg
+    name: rancher-demo
+    urls:
+    - https://github.com/MichaelTrip/helm-charts/releases/download/rancher-demo-0.5.3/rancher-demo-0.5.3.tgz
+    version: 0.5.3
+generated: "2024-02-26T14:44:14.124872489Z"
