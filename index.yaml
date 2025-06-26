@@ -3,6 +3,26 @@ entries:
   guacamole:
   - apiVersion: v1
     appVersion: 1.6.0
+    created: "2025-06-26T10:41:11.1472581Z"
+    description: Apache Guacamole is a clientless remote desktop gateway. It supports
+      standard protocols like VNC, RDP, and SSH.
+    digest: b4f81d389eb49c71a1f28aaf51e4fb49577d2945f9f5a6d8413c1f8a374ce91f
+    icon: http://guacamole.apache.org/images/guacamole-logo-64.png
+    maintainers:
+    - email: helm@gavinmogan.com
+      name: Gavin Mogan
+    - email: jens@beryju.org
+      name: Jens Langhammer
+    - email: michael@alcatrash.org
+      name: Michael Trip
+    name: guacamole
+    sources:
+    - http://guacamole.apache.org/
+    urls:
+    - https://github.com/MichaelTrip/helm-charts/releases/download/guacamole-1.6.1/guacamole-1.6.1.tgz
+    version: 1.6.1
+  - apiVersion: v1
+    appVersion: 1.6.0
     created: "2025-06-26T06:01:05.731280711Z"
     description: Apache Guacamole is a clientless remote desktop gateway. It supports
       standard protocols like VNC, RDP, and SSH.
@@ -32,4 +52,4 @@ entries:
     urls:
     - https://github.com/MichaelTrip/helm-charts/releases/download/rancher-demo-0.5.3/rancher-demo-0.5.3.tgz
     version: 0.5.3
-generated: "2025-06-26T06:01:05.731294197Z"
+generated: "2025-06-26T10:41:11.147274391Z"
