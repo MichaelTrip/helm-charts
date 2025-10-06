@@ -41,6 +41,30 @@ entries:
     urls:
     - https://github.com/MichaelTrip/helm-charts/releases/download/guacamole-1.6.0/guacamole-1.6.0.tgz
     version: 1.6.0
+  hello-world-example:
+  - annotations:
+      category: Example
+    apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-10-06T11:52:06.076303275Z"
+    description: A Hello World example Helm chart demonstrating values.yaml capabilities
+      with OpenShift compatibility
+    digest: b449aa7e8d12ceae9e55085fac151f02d3c6cafccf8130967c9b0d22bcbc1a78
+    home: https://github.com/MichaelTrip/helm-charts
+    keywords:
+    - hello-world
+    - nginx
+    - example
+    - openshift
+    maintainers:
+    - name: MichaelTrip
+    name: hello-world-example
+    sources:
+    - https://github.com/MichaelTrip/helm-charts
+    type: application
+    urls:
+    - https://github.com/MichaelTrip/helm-charts/releases/download/hello-world-example-0.1.0/hello-world-example-0.1.0.tgz
+    version: 0.1.0
   rancher-demo:
   - apiVersion: v1
     appVersion: 0.5.3
@@ -52,4 +76,4 @@ entries:
     urls:
     - https://github.com/MichaelTrip/helm-charts/releases/download/rancher-demo-0.5.3/rancher-demo-0.5.3.tgz
     version: 0.5.3
-generated: "2025-06-26T10:41:11.147274391Z"
+generated: "2025-10-06T11:52:06.07631677Z"
