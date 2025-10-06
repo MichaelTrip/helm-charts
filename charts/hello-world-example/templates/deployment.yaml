@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hello-world-example.fullname" . }}
+  labels:
+    {{- include "hello-world-example.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "hello-world-example.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "hello-world-example.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "hello-world-example.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          {{- if .Values.healthcheck.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: {{ .Values.healthcheck.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthcheck.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthcheck.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthcheck.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.healthcheck.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.healthcheck.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: {{ .Values.healthcheck.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthcheck.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthcheck.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthcheck.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.healthcheck.readinessProbe.successThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: HELLO_MESSAGE
+              value: "{{ .Values.app.message }}"
+            - name: GREETING
+              value: "{{ .Values.app.greeting }}"
+            - name: ENVIRONMENT
+              value: "{{ .Values.app.environment }}"
+            - name: VERSION
+              value: "{{ .Values.app.version }}"
+            {{- if .Values.extraEnvVars }}
+            {{- range .Values.extraEnvVars }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+            {{- end }}
+          volumeMounts:
+            - name: html-content
+              mountPath: /opt/app-root/src
+              readOnly: true
+            {{- if .Values.extraVolumeMounts }}
+            {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: html-content
+          configMap:
+            name: {{ include "hello-world-example.fullname" . }}-html
+        {{- if .Values.extraVolumes }}
+        {{- toYaml .Values.extraVolumes | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

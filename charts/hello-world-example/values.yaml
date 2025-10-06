@@ -1,0 +1,187 @@
+# Default values for hello-world-example.
+# This is a YAML-formatted file.
+# Declare variables to be substituted into your templates.
+
+# Application configuration
+app:
+  # The hello world message that will be displayed
+  message: "Hello World from Helm!"
+  # Additional greeting message
+  greeting: "Welcome to our Kubernetes/OpenShift application!"
+  # Environment name (dev, staging, prod)
+  environment: "development"
+  # Version tag for display
+  version: "v1.0.0"
+
+# Replica count
+replicaCount: 1
+
+# Image configuration
+image:
+  # Using UBI9-based nginx for OpenShift compatibility
+  repository: registry.redhat.io/ubi9/nginx-124
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1-74"
+  pullPolicy: IfNotPresent
+
+# Image pull secrets for private registries
+imagePullSecrets: []
+
+# Service account configuration
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod security context (OpenShift compatible)
+podSecurityContext:
+  # fsGroup: 2000
+  runAsNonRoot: true
+
+# Security context (OpenShift compatible)
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  # runAsUser: 1001
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+# Ingress configuration (for Kubernetes)
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: hello-world.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: hello-world-tls
+  #    hosts:
+  #      - hello-world.local
+
+# OpenShift Route configuration
+route:
+  enabled: false
+  annotations: {}
+  host: ""
+  # TLS configuration for routes
+  tls:
+    enabled: false
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Autoscaling configuration
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity rules
+affinity: {}
+
+# Health check configuration
+healthcheck:
+  # Liveness probe configuration
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+  # Readiness probe configuration
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+    successThreshold: 1
+
+# Configuration for the HTML content
+html:
+  # Custom CSS styles
+  customCSS: |
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: white;
+    }
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    h1 { font-size: 3rem; margin-bottom: 1rem; }
+    p { font-size: 1.2rem; margin: 0.5rem 0; }
+    .info { font-size: 0.9rem; opacity: 0.8; margin-top: 2rem; }
+
+# Monitoring and observability
+monitoring:
+  # Enable Prometheus metrics
+  prometheus:
+    enabled: false
+    port: 9090
+    path: /metrics
+
+# Extra environment variables
+extraEnvVars: []
+# - name: EXTRA_VAR
+#   value: "extra-value"
+
+# Extra volumes
+extraVolumes: []
+# - name: extra-volume
+#   configMap:
+#     name: extra-config
+
+# Extra volume mounts
+extraVolumeMounts: []
+# - name: extra-volume
+#   mountPath: /extra-mount

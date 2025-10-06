@@ -1,0 +1,18 @@
+apiVersion: v2
+name: hello-world-example
+description: A Hello World example Helm chart demonstrating values.yaml capabilities with OpenShift compatibility
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - hello-world
+  - nginx
+  - example
+  - openshift
+maintainers:
+  - name: MichaelTrip
+home: https://github.com/MichaelTrip/helm-charts
+sources:
+  - https://github.com/MichaelTrip/helm-charts
+annotations:
+  category: Example
