@@ -76,4 +76,26 @@ entries:
     urls:
     - https://github.com/MichaelTrip/helm-charts/releases/download/rancher-demo-0.5.3/rancher-demo-0.5.3.tgz
     version: 0.5.3
-generated: "2025-10-06T11:52:06.07631677Z"
+  transfer-sh:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2026-03-19T08:19:27.877980445Z"
+    description: A Helm chart for transfer.sh - Easy file sharing from the command
+      line
+    digest: 444f2f00eb75c7f6058196899fd7316bbbcdeb1dc2bca64b0cb97760f3a2d855
+    home: https://github.com/dutchcoders/transfer.sh
+    keywords:
+    - transfer
+    - file-sharing
+    - upload
+    - s3
+    - storj
+    - gdrive
+    name: transfer-sh
+    sources:
+    - https://github.com/dutchcoders/transfer.sh
+    type: application
+    urls:
+    - https://github.com/MichaelTrip/helm-charts/releases/download/transfer-sh-1.0.0/transfer-sh-1.0.0.tgz
+    version: 1.0.0
+generated: "2026-03-19T08:19:27.877990811Z"
