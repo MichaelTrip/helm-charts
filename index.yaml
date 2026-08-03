@@ -70,6 +70,30 @@ entries:
       category: Application
     apiVersion: v2
     appVersion: v0.1.0-beta.23
+    created: "2026-08-03T10:21:40.603955794Z"
+    description: A Helm chart for Journiv, a self-hosted private journaling application
+    digest: 27137d297b58a2b20e9a1288ff1ce182e84d324db867b6f80363d5e330c34180
+    home: https://github.com/MichaelTrip/helm-charts
+    keywords:
+    - journiv
+    - journal
+    - self-hosted
+    - postgres
+    - valkey
+    maintainers:
+    - name: MichaelTrip
+    name: journiv
+    sources:
+    - https://github.com/journiv/journiv-app
+    - https://github.com/MichaelTrip/helm-charts
+    type: application
+    urls:
+    - https://github.com/MichaelTrip/helm-charts/releases/download/journiv-0.1.2/journiv-0.1.2.tgz
+    version: 0.1.2
+  - annotations:
+      category: Application
+    apiVersion: v2
+    appVersion: v0.1.0-beta.23
     created: "2026-08-03T09:58:51.096340536Z"
     description: A Helm chart for Journiv, a self-hosted private journaling application
     digest: 1cda584ff4f10e679a8341a6232bc5329eef3aca5b38cc817f86c11ca4ea8f32
@@ -147,4 +171,4 @@ entries:
     urls:
     - https://github.com/MichaelTrip/helm-charts/releases/download/transfer-sh-1.0.0/transfer-sh-1.0.0.tgz
     version: 1.0.0
-generated: "2026-08-03T09:58:51.09635899Z"
+generated: "2026-08-03T10:21:40.603971935Z"
