@@ -1,6 +1,19 @@
 {{- $postgresSecretName := .Values.config.postgres.secretName | default .Values.config.postgres.connectionStringSecretName | default (include "journiv.postgresSecretName" .) -}}
 {{- $postgresUsernameKey := .Values.config.postgres.usernameKey | default "username" -}}
 {{- $postgresPasswordKey := .Values.config.postgres.passwordKey | default "password" -}}
+{{- $postgresLookup := lookup "v1" "Secret" .Release.Namespace $postgresSecretName -}}
+{{- $postgresUsername := "" -}}
+{{- $postgresPassword := "" -}}
+{{- if and $postgresLookup $postgresLookup.data (hasKey $postgresLookup.data $postgresUsernameKey) -}}
+{{- $postgresUsername = index $postgresLookup.data $postgresUsernameKey | b64dec -}}
+{{- end -}}
+{{- if and $postgresLookup $postgresLookup.data (hasKey $postgresLookup.data $postgresPasswordKey) -}}
+{{- $postgresPassword = index $postgresLookup.data $postgresPasswordKey | b64dec -}}
+{{- end -}}
+{{- $postgresConnectionString := .Values.config.postgres.connectionString -}}
+{{- if and .Values.config.postgres.connectionString $postgresUsername $postgresPassword (not (contains "@" .Values.config.postgres.connectionString)) -}}
+{{- $postgresConnectionString = printf "postgresql://%s:%s@%s" $postgresUsername $postgresPassword (trimPrefix "postgresql://" .Values.config.postgres.connectionString) -}}
+{{- end -}}
 {{- $domainName := .Values.config.domainName -}}
 {{- if and (not $domainName) .Values.ingress.enabled .Values.ingress.hosts -}}
 {{- $domainName = (index .Values.ingress.hosts 0).host -}}
@@ -65,10 +78,12 @@ spec:
               value: {{ .Values.config.environment | quote }}
             - name: DB_DRIVER
               value: postgres
-            {{- if .Values.config.postgres.connectionString }}
-            - name: DATABASE_URL
-              value: {{ .Values.config.postgres.connectionString | quote }}
-            {{- end }}
+            - name: POSTGRES_HOST
+              value: {{ .Values.config.postgres.host | quote }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.config.postgres.port | quote }}
+            - name: POSTGRES_DB
+              value: {{ .Values.config.postgres.database | quote }}
             {{- if or .Values.config.postgres.secretName .Values.config.postgres.connectionStringSecretName }}
             - name: POSTGRES_USER
               valueFrom:
@@ -81,12 +96,6 @@ spec:
                   name: {{ $postgresSecretName | quote }}
                   key: {{ $postgresPasswordKey | quote }}
             {{- else }}
-            - name: POSTGRES_HOST
-              value: {{ .Values.config.postgres.host | quote }}
-            - name: POSTGRES_PORT
-              value: {{ .Values.config.postgres.port | quote }}
-            - name: POSTGRES_DB
-              value: {{ .Values.config.postgres.database | quote }}
             - name: POSTGRES_USER
               value: {{ .Values.config.postgres.user | quote }}
             - name: POSTGRES_PASSWORD
