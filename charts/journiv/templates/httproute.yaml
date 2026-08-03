@@ -1,0 +1,21 @@
+{{- if .Values.gatewayApi.enabled -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "journiv.fullname" . }}
+  labels:
+    {{- include "journiv.labels" . | nindent 4 }}
+  {{- with .Values.gatewayApi.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    {{- toYaml .Values.gatewayApi.parentRefs | nindent 4 }}
+  hostnames:
+    {{- toYaml .Values.gatewayApi.hostnames | nindent 4 }}
+  rules:
+    - backendRefs:
+        - name: {{ include "journiv.fullname" . }}
+          port: {{ .Values.service.port }}
+{{- end }}

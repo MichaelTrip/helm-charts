@@ -1,0 +1,83 @@
+{{- if .Values.valkey.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "journiv.fullname" . }}-valkey
+  labels:
+    {{- include "journiv.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "journiv.name" . }}-valkey
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "journiv.name" . }}-valkey
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: valkey
+          image: {{ printf "%s:%s" .Values.valkey.image.repository .Values.valkey.image.tag }}
+          imagePullPolicy: {{ .Values.valkey.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.valkey.service.port }}
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "valkey-cli ping"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "valkey-cli ping"]
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          volumeMounts:
+            - name: valkey-data
+              mountPath: /data
+      volumes:
+        {{- if .Values.valkey.persistence.enabled }}
+        - name: valkey-data
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-valkey-data" (include "journiv.fullname" .) }}
+        {{- else }}
+        - name: valkey-data
+          emptyDir: {}
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "journiv.fullname" . }}-valkey
+  labels:
+    {{- include "journiv.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.valkey.service.port }}
+      targetPort: {{ .Values.valkey.service.port }}
+      protocol: TCP
+      name: valkey
+  selector:
+    app.kubernetes.io/name: {{ include "journiv.name" . }}-valkey
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Values.valkey.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ printf "%s-valkey-data" (include "journiv.fullname" .) }}
+  labels:
+    {{- include "journiv.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.valkey.persistence.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.valkey.persistence.size }}
+  {{- with .Values.valkey.persistence.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,139 @@
+replicaCount: 1
+
+image:
+  repository: swalabtech/journiv-app
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: false
+
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: journiv.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+gatewayApi:
+  enabled: false
+  annotations: {}
+  parentRefs: []
+  hostnames: []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+  existingClaim: ""
+
+config:
+  secretKey: ""
+  existingSecret: ""
+  domainName: ""
+  environment: "production"
+  rateLimitStorageUri: ""
+  postgres:
+    host: "journiv-postgres"
+    port: 5432
+    database: "journiv_prod"
+    user: "journiv"
+    password: "journiv"
+    existingSecret: ""
+    connectionString: ""
+    secretName: ""
+    usernameKey: "username"
+    passwordKey: "password"
+    connectionStringSecretName: ""
+    connectionStringSecretKey: "DATABASE_URL"
+  redis:
+    host: "journiv-valkey"
+    port: 6379
+    database: 0
+    url: "redis://journiv-valkey:6379/0"
+  celery:
+    brokerUrl: "redis://journiv-valkey:6379/0"
+    resultBackend: "redis://journiv-valkey:6379/0"
+  extraEnv: {}
+
+postgresql:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "18.1"
+    pullPolicy: IfNotPresent
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+  service:
+    port: 5432
+  auth:
+    username: "journiv"
+    password: ""
+    database: "journiv_prod"
+
+valkey:
+  enabled: true
+  image:
+    repository: valkey/valkey
+    tag: "9.0-alpine"
+    pullPolicy: IfNotPresent
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+  service:
+    port: 6379

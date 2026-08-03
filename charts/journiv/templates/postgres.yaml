@@ -1,0 +1,94 @@
+{{- if .Values.postgresql.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "journiv.fullname" . }}-postgres
+  labels:
+    {{- include "journiv.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "journiv.fullname" . }}-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "journiv.name" . }}-postgres
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "journiv.name" . }}-postgres
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: postgres
+          image: {{ printf "%s:%s" .Values.postgresql.image.repository .Values.postgresql.image.tag }}
+          imagePullPolicy: {{ .Values.postgresql.image.pullPolicy }}
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.postgresql.auth.username | quote }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "journiv.postgresSecretName" . }}
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresql.auth.database | quote }}
+          ports:
+            - containerPort: {{ .Values.postgresql.service.port }}
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }}"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }}"]
+            initialDelaySeconds: 20
+            periodSeconds: 20
+      volumes:
+        {{- if .Values.postgresql.persistence.enabled }}
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-postgres-data" (include "journiv.fullname" .) }}
+        {{- else }}
+        - name: postgres-data
+          emptyDir: {}
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "journiv.fullname" . }}-postgres
+  labels:
+    {{- include "journiv.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.postgresql.service.port }}
+      targetPort: {{ .Values.postgresql.service.port }}
+      protocol: TCP
+      name: postgres
+  selector:
+    app.kubernetes.io/name: {{ include "journiv.name" . }}-postgres
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Values.postgresql.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ printf "%s-postgres-data" (include "journiv.fullname" .) }}
+  labels:
+    {{- include "journiv.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.postgresql.persistence.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.postgresql.persistence.size }}
+  {{- with .Values.postgresql.persistence.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+{{- end }}
+{{- end }}

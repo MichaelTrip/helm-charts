@@ -1,0 +1,20 @@
+apiVersion: v2
+name: journiv
+description: A Helm chart for Journiv, a self-hosted private journaling application
+type: application
+version: 0.1.0
+appVersion: "v0.1.0-beta.23"
+keywords:
+  - journiv
+  - journal
+  - self-hosted
+  - postgres
+  - valkey
+maintainers:
+  - name: MichaelTrip
+home: https://github.com/MichaelTrip/helm-charts
+sources:
+  - https://github.com/journiv/journiv-app
+  - https://github.com/MichaelTrip/helm-charts
+annotations:
+  category: Application

@@ -1,0 +1,140 @@
+{{- $postgresSecretName := .Values.config.postgres.secretName | default .Values.config.postgres.connectionStringSecretName | default (include "journiv.postgresSecretName" .) -}}
+{{- $postgresUsernameKey := .Values.config.postgres.usernameKey | default "username" -}}
+{{- $postgresPasswordKey := .Values.config.postgres.passwordKey | default "password" -}}
+{{- $domainName := .Values.config.domainName -}}
+{{- if and (not $domainName) .Values.ingress.enabled .Values.ingress.hosts -}}
+{{- $domainName = (index .Values.ingress.hosts 0).host -}}
+{{- end -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "journiv.fullname" . }}
+  labels:
+    {{- include "journiv.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "journiv.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "journiv.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "journiv.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-data-permissions
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /data/media /data/logs /data/uploads /data/cache &&
+              chown -R 1000:1000 /data || true
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      containers:
+        - name: journiv
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ include "journiv.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "journiv.appSecretName" . }}
+                  key: SECRET_KEY
+            - name: DOMAIN_NAME
+              value: {{ $domainName | default "" | quote }}
+            - name: ENVIRONMENT
+              value: {{ .Values.config.environment | quote }}
+            - name: DB_DRIVER
+              value: postgres
+            {{- if .Values.config.postgres.connectionString }}
+            - name: DATABASE_URL
+              value: {{ .Values.config.postgres.connectionString | quote }}
+            {{- end }}
+            {{- if or .Values.config.postgres.secretName .Values.config.postgres.connectionStringSecretName }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $postgresSecretName | quote }}
+                  key: {{ $postgresUsernameKey | quote }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $postgresSecretName | quote }}
+                  key: {{ $postgresPasswordKey | quote }}
+            {{- else }}
+            - name: POSTGRES_HOST
+              value: {{ .Values.config.postgres.host | quote }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.config.postgres.port | quote }}
+            - name: POSTGRES_DB
+              value: {{ .Values.config.postgres.database | quote }}
+            - name: POSTGRES_USER
+              value: {{ .Values.config.postgres.user | quote }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "journiv.postgresSecretName" . }}
+                  key: POSTGRES_PASSWORD
+            {{- end }}
+            - name: REDIS_URL
+              value: {{ .Values.config.redis.url | quote }}
+            - name: CELERY_BROKER_URL
+              value: {{ .Values.config.celery.brokerUrl | quote }}
+            - name: CELERY_RESULT_BACKEND
+              value: {{ .Values.config.celery.resultBackend | quote }}
+            - name: RATE_LIMIT_STORAGE_URI
+              value: {{ default .Values.config.redis.url .Values.config.rateLimitStorageUri | quote }}
+            {{- range $k, $v := .Values.config.extraEnv }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 45
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ default (printf "%s-data" (include "journiv.fullname" .)) .Values.persistence.existingClaim }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
