@@ -76,6 +76,45 @@ spec:
               value: {{ $domainName | default "" | quote }}
             - name: ENVIRONMENT
               value: {{ .Values.config.environment | quote }}
+            - name: DISABLE_SIGNUP
+              value: {{ ternary "true" "false" .Values.config.disableSignup | quote }}
+            - name: OIDC_ENABLED
+              value: {{ ternary "true" "false" .Values.config.oidc.enabled | quote }}
+            - name: OIDC_ONLY
+              value: {{ ternary "true" "false" .Values.config.oidc.only | quote }}
+            - name: OIDC_AUTO_PROVISION
+              value: {{ ternary "true" "false" .Values.config.oidc.autoProvision | quote }}
+            - name: OIDC_SCOPES
+              value: {{ .Values.config.oidc.scopes | quote }}
+            {{- if .Values.config.oidc.issuer }}
+            - name: OIDC_ISSUER
+              value: {{ .Values.config.oidc.issuer | quote }}
+            {{- end }}
+            {{- if .Values.config.oidc.existingSecret }}
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.config.oidc.existingSecret | quote }}
+                  key: {{ .Values.config.oidc.clientIdKey | quote }}
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.config.oidc.existingSecret | quote }}
+                  key: {{ .Values.config.oidc.clientSecretKey | quote }}
+            {{- else }}
+            {{- if .Values.config.oidc.clientId }}
+            - name: OIDC_CLIENT_ID
+              value: {{ .Values.config.oidc.clientId | quote }}
+            {{- end }}
+            {{- if .Values.config.oidc.clientSecret }}
+            - name: OIDC_CLIENT_SECRET
+              value: {{ .Values.config.oidc.clientSecret | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.config.oidc.redirectUri }}
+            - name: OIDC_REDIRECT_URI
+              value: {{ .Values.config.oidc.redirectUri | quote }}
+            {{- end }}
             - name: DB_DRIVER
               value: postgres
             - name: POSTGRES_HOST

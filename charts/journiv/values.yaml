@@ -80,6 +80,19 @@ config:
   existingSecret: ""
   domainName: ""
   environment: "production"
+  disableSignup: false
+  oidc:
+    enabled: false
+    only: false
+    autoProvision: true
+    issuer: ""
+    clientId: ""
+    clientSecret: ""
+    existingSecret: ""
+    clientIdKey: "OIDC_CLIENT_ID"
+    clientSecretKey: "OIDC_CLIENT_SECRET"
+    redirectUri: ""
+    scopes: "openid email profile"
   rateLimitStorageUri: ""
   postgres:
     host: "journiv-postgres"
