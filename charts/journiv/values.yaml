@@ -76,7 +76,9 @@ persistence:
   existingClaim: ""
 
 config:
+  # Required unless existingSecret is set. Reuse the current key when upgrading.
   secretKey: ""
+  # Secret containing SECRET_KEY. When set, the chart does not create the app Secret.
   existingSecret: ""
   domainName: ""
   environment: "production"
@@ -100,6 +102,8 @@ config:
     database: "journiv_prod"
     user: "journiv"
     password: "journiv"
+    # Secret containing POSTGRES_PASSWORD, shared by the app and bundled PostgreSQL.
+    # When set, the chart does not create the PostgreSQL Secret.
     existingSecret: ""
     connectionString: ""
     secretName: ""
@@ -133,6 +137,7 @@ postgresql:
     port: 5432
   auth:
     username: "journiv"
+    # Required unless config.postgres.existingSecret is set. Reuse the current password when upgrading.
     password: ""
     database: "journiv_prod"
 

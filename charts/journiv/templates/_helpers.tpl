@@ -66,25 +66,9 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{- define "journiv.appSecretValue" -}}
-{{- $secretName := include "journiv.appSecretName" . -}}
-{{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName -}}
-{{- if .Values.config.secretKey -}}
-{{- .Values.config.secretKey -}}
-{{- else if and $existingSecret $existingSecret.data (hasKey $existingSecret.data "SECRET_KEY") -}}
-{{- index $existingSecret.data "SECRET_KEY" | b64dec -}}
-{{- else -}}
-{{- randAlphaNum 32 -}}
-{{- end -}}
+{{- required "Set config.secretKey or config.existingSecret; credentials must be stable across Helm renders (reuse the current SECRET_KEY when upgrading)." .Values.config.secretKey -}}
 {{- end -}}
 
 {{- define "journiv.postgresPasswordValue" -}}
-{{- $secretName := include "journiv.postgresSecretName" . -}}
-{{- $existingSecret := lookup "v1" "Secret" .Release.Namespace $secretName -}}
-{{- if .Values.postgresql.auth.password -}}
-{{- .Values.postgresql.auth.password -}}
-{{- else if and $existingSecret $existingSecret.data (hasKey $existingSecret.data "POSTGRES_PASSWORD") -}}
-{{- index $existingSecret.data "POSTGRES_PASSWORD" | b64dec -}}
-{{- else -}}
-{{- randAlphaNum 32 -}}
-{{- end -}}
+{{- required "Set postgresql.auth.password or config.postgres.existingSecret; credentials must be stable across Helm renders (reuse the current POSTGRES_PASSWORD when upgrading)." .Values.postgresql.auth.password -}}
 {{- end -}}
