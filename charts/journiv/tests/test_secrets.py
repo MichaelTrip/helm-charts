@@ -12,7 +12,10 @@ CHART = Path(__file__).resolve().parents[1]
 def render(**values):
     command = ["helm", "template", "journiv", str(CHART), "--namespace", "journiv"]
     for key, value in values.items():
-        command.extend(["--set-string", f"{key}={value}"])
+        if isinstance(value, bool):
+            command.extend(["--set", f"{key}={str(value).lower()}"])
+        else:
+            command.extend(["--set-string", f"{key}={value}"])
     return subprocess.run(command, capture_output=True, text=True)
 
 
@@ -94,6 +97,42 @@ class SecretRenderingTests(unittest.TestCase):
         })
         self.assert_encoded(output, "CUSTOM_URL", url)
         self.assertNotIn(url, output)
+
+    def test_external_database_credentials_do_not_require_bundled_password(self):
+        for reference in ("secretName", "connectionStringSecretName"):
+            with self.subTest(reference=reference):
+                values = {
+                    "config.secretKey": "app-key",
+                    "postgresql.enabled": False,
+                    "config.postgres.host": "journiv-postgres-rw",
+                    "config.postgres.database": "journiv",
+                    f"config.postgres.{reference}": "journiv-postgres-app",
+                }
+                output = self.successful_render(values)
+                self.assertEqual(output, self.successful_render(values))
+                self.assertEqual(output.count("kind: Secret\n"), 1)
+                self.assertNotIn("kind: StatefulSet\n", output)
+                self.assertIn('name: "journiv-postgres-app"\n                  key: "username"', output)
+                self.assertIn('name: "journiv-postgres-app"\n                  key: "password"', output)
+
+    def test_external_app_credentials_do_not_bypass_bundled_database_password(self):
+        result = render(**{
+            "config.secretKey": "app-key",
+            "config.postgres.secretName": "external-db",
+        })
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Set postgresql.auth.password", result.stderr)
+
+    def test_external_credentials_with_inline_connection_string(self):
+        url = "postgresql://database:5432/journiv"
+        output = self.successful_render({
+            "config.secretKey": "app-key",
+            "postgresql.enabled": False,
+            "config.postgres.secretName": "external-db",
+            "config.postgres.connectionString": url,
+        })
+        self.assert_encoded(output, "DATABASE_URL", url)
+        self.assertNotIn("  POSTGRES_PASSWORD:", output)
 
 
 if __name__ == "__main__":

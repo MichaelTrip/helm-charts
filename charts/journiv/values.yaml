@@ -106,6 +106,8 @@ config:
     # When set, the chart does not create the PostgreSQL Secret.
     existingSecret: ""
     connectionString: ""
+    # Secret with usernameKey/passwordKey for external PostgreSQL.
+    # With postgresql.enabled=false, no postgresql.auth.password is required.
     secretName: ""
     usernameKey: "username"
     passwordKey: "password"

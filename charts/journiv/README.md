@@ -77,16 +77,22 @@ helm upgrade --install journiv ./charts/journiv \
   --set postgresql.auth.password='change-me-strongly'
 ```
 
-To point Journiv at an external PostgreSQL instance, you can provide a connection URL plus an existing Secret that contains the username and password under your chosen keys:
+To point Journiv at an external PostgreSQL instance, set its host and database plus an existing Secret that contains the username and password under your chosen keys:
 
 ```yaml
 config:
+  secretKey: "<current application SECRET_KEY>"
   postgres:
-    connectionString: "postgresql://db.example.com:5432/journiv"
+    host: "journiv-postgres-rw"
+    database: "journiv"
     secretName: "my-db-secret"
     usernameKey: "username"
     passwordKey: "password"
+postgresql:
+  enabled: false
 ```
+
+With bundled PostgreSQL disabled, `config.postgres.secretName` supplies the application credentials without requiring `postgresql.auth.password` (fixed in chart 0.1.5). Keep the current application `config.secretKey`, or set `config.existingSecret` to a separately managed Secret containing `SECRET_KEY`. Redis settings belong under `config.redis`.
 
 To load OIDC client credentials from a Kubernetes Secret instead of values:
 
